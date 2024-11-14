@@ -1,0 +1,4 @@
+.vscode/
+oe-logs
+oe-workdir
+bin/*
