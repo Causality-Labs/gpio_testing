@@ -9,8 +9,8 @@ ifndef CFLAGS
 endif
 
 ################################## RULES ##################################
-APP_OBJECTS = $(BINDIR)/gpio-test.o
-
+APP_OBJECTS += $(BINDIR)/gpio-test.o
+APP_OBJECTS += $(BINDIR)/loragw_gpio.o
 
 
 $(BINDIR)/%.o: $(SRCDIR)/%.c

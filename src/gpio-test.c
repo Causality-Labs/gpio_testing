@@ -7,9 +7,12 @@
 #include <string.h>
 #include <errno.h>
 #include <stdint.h>
+#include <stdbool.h>
+#include "loragw_gpio.h"
 
 int main(int argc, char *argv[])
 {	
+	/*
 	struct gpiochip_info chip_info;
 	struct gpio_v2_line_info line_info;
 	struct gpio_v2_line_request line_request;
@@ -17,24 +20,11 @@ int main(int argc, char *argv[])
 	struct gpio_v2_line_values line_values_set;
 	struct gpio_v2_line_values line_values_get;
 	uint64_t mask = 0b1;
+	*/
 
-
-	if (argc < 2) {
-        printf("Usage: %s <number>\n", argv[0]);
-        return -1;
-    }
-
-	int offset;
-    if (sscanf(argv[1], "%d", &offset) != 1) {
-        printf("Invalid number: %s\n", argv[1]);
-        return -1;
-    }
-
-	printf("Requested offset is: %d\n",offset);
-
-
-	static const char *chip_path = "/dev/gpiochip5";
+	static const char *chip_path = "/dev/virt_gpio";
 	int ret = 0;
+	bool is_present = false;
 	int fd = open(chip_path, O_RDWR);
 
 	if(fd < 0)
@@ -43,7 +33,20 @@ int main(int argc, char *argv[])
 
 		return -1;
 	}
+	
+	for(unsigned int index = 0; index < 20; index++)
+	{
+		is_present = is_gpio_pin_exported(fd, index);
+		if(!is_present)
+		{
+			printf("Pin %d does not exist.\n", index);
+		}
 
+		printf("Pin %d exist.\n", index);
+	}
+	
+	close(fd);
+	/*
 	ret = ioctl(fd, GPIO_GET_CHIPINFO_IOCTL, &chip_info);
 	if (ret < 0)
 	{	
@@ -55,31 +58,36 @@ int main(int argc, char *argv[])
     printf("GPIO Chip Label: %s\n", chip_info.label);
     printf("Number of GPIO lines: %u\n", chip_info.lines);
     printf("************************************\n");
-
-	if(offset >= chip_info.lines)
-	{
-		printf("Offset is greater than NUmber of lines.\n");
-		return -1;
-	}
-
+	
+	unsigned int max_no_of_lines = chip_info.lines;
 	memset(&line_info, 0, sizeof(line_info));
-	line_info.offset = offset;
 
-	ret = ioctl(fd, GPIO_V2_GET_LINEINFO_IOCTL, &line_info);
-	if (ret < 0)
-	{	
-		perror("Error getting gpio chip info error message is: ");
-		return -1;
+	
+	for(unsigned int index = 0; index < max_no_of_lines; index++)
+	{
+		line_info.offset = index;
+
+		ret = ioctl(fd, GPIO_V2_GET_LINEINFO_IOCTL, &line_info);
+		if (ret < 0)
+		{	
+			perror("Error getting gpio chip info error message is: ");
+			return -1;
+		}
+		printf("Name: %s\n",line_info.name);
+		printf("Consumer: %s\n",line_info.consumer);
+		printf("Offset: %d\n",line_info.offset);
+		printf("Num of attributes: %d\n",line_info.num_attrs);
+		printf("Flags: %llu\n",line_info.flags);
+		printf("************************************\n");
+
 	}
-
-	printf("Name: %s\n",line_info.name);
-	printf("Consumer: %s\n",line_info.consumer);
-	printf("Offset: %d\n",line_info.offset);
-	printf("Num of attributes: %d\n",line_info.num_attrs);
-	printf("Flags: %llu\n",line_info.flags);
-    printf("************************************\n");
+	*/
+	//line_info.offset = offset;
 
 
+	
+
+	/*
 	memset(&line_request, 0, sizeof(line_request));
     line_request.offsets[0] = offset;
 	strncpy(line_request.consumer, "my_lines", GPIO_MAX_NAME_SIZE - 1);
@@ -114,6 +122,7 @@ int main(int argc, char *argv[])
 
 
 	line_values_set.mask = (uint64_t)0b1;
+	/*
 	while(1)
 	{
 		line_values_set.bits = (uint64_t)0b0;
@@ -135,9 +144,9 @@ int main(int argc, char *argv[])
 		sleep(1);
 
 	}
-
-    close(line_request.fd);	
-	close(fd);
+	*/
+    //close(line_request.fd);	
+	//close(fd);
 
 	return 0;
 }
