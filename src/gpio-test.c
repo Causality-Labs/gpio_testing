@@ -10,8 +10,16 @@
 #include <stdbool.h>
 #include "loragw_gpio.h"
 
+#define GPIO_BASE_PATH "/dev/virt_gpio"
+
 int main(int argc, char *argv[])
-{	
+{
+
+    uint64_t flag;
+	struct gpio_v2_line_config line_config;
+
+	
+
 	/*
 	struct gpiochip_info chip_info;
 	struct gpio_v2_line_info line_info;
@@ -22,10 +30,9 @@ int main(int argc, char *argv[])
 	uint64_t mask = 0b1;
 	*/
 
-	static const char *chip_path = "/dev/virt_gpio";
+
 	//int chip_fd = open_gpio_chip(chip_path);
 
-	close(chip_fd);
 	/*
 	ret = ioctl(fd, GPIO_GET_CHIPINFO_IOCTL, &chip_info);
 	if (ret < 0)

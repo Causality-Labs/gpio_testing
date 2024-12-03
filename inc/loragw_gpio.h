@@ -2,8 +2,9 @@
 #define LORAGW_GPIO_H_
 
 #include <stdint.h>
+#include <linux/gpio.h>
 
-int open_gpio_chip(const char * gpio_chip_path);
-int request_gpio_line(int gpio_chip_fd, int gpio_line);
+int gpio_line_config(uint64_t flag,  struct gpio_v2_line_config * line_config);
+int gpio_line_request(unsigned int gpio_pin, struct gpio_v2_line_config *config,  const char *consumer);
 
 #endif /* LORAGW_GPIO_H_ */
