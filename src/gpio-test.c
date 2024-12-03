@@ -23,29 +23,9 @@ int main(int argc, char *argv[])
 	*/
 
 	static const char *chip_path = "/dev/virt_gpio";
-	int ret = 0;
-	bool is_present = false;
-	int fd = open(chip_path, O_RDWR);
+	//int chip_fd = open_gpio_chip(chip_path);
 
-	if(fd < 0)
-	{
-		printf("Error Opening chip file.\n");
-
-		return -1;
-	}
-	
-	for(unsigned int index = 0; index < 20; index++)
-	{
-		is_present = is_gpio_pin_exported(fd, index);
-		if(!is_present)
-		{
-			printf("Pin %d does not exist.\n", index);
-		}
-
-		printf("Pin %d exist.\n", index);
-	}
-	
-	close(fd);
+	close(chip_fd);
 	/*
 	ret = ioctl(fd, GPIO_GET_CHIPINFO_IOCTL, &chip_info);
 	if (ret < 0)
