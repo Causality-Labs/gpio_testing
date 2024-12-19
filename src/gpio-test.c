@@ -8,16 +8,22 @@
 #include <errno.h>
 #include <stdint.h>
 #include <stdbool.h>
-#include "loragw_gpio.h"
+//#include "loragw_gpio.h"
+#include "gpio_driver.h"
 
 #define GPIO_BASE_PATH "/dev/virt_gpio"
+const char *gpio_line_name = "gps_ant_undercurrent_gpio";
 
 int main(int argc, char *argv[])
 {
 
-    uint64_t flag;
-	struct gpio_v2_line_config line_config;
+	int ret = 0;
+	ret = gpio_line_request(sizeof(gpio_line_name), gpio_line_name);
 
+	if (ret >= 0)
+	{
+		printf("Program ran succesfully.\n");
+	}
 	
 
 	/*
