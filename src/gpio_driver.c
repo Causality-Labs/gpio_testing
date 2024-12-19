@@ -14,7 +14,7 @@
 #define CONSUMER "system_health_monitor"
 
 
-int gpio_line_request(size_t n, char line_name[n])
+int gpio_line_request(const char *line_name)
 {
     struct gpiochip_info chip_info;
     struct gpio_v2_line_info line_info;
@@ -39,13 +39,9 @@ int gpio_line_request(size_t n, char line_name[n])
 	{	
         perror("Error getting chip line info");
         close(chip_fd);
-		return -1;
+		return ret;
 	}
 
-    printf("GPIO Chip Name: %s\n", chip_info.name);
-    printf("GPIO Chip Label: %s\n", chip_info.label);
-    printf("Number of GPIO lines: %u\n", chip_info.lines);
-    printf("************************************\n");
 	
 	max_no_of_lines = chip_info.lines;
     memset(&line_info, 0, sizeof(line_info));
@@ -58,46 +54,58 @@ int gpio_line_request(size_t n, char line_name[n])
 		if (ret < 0)
 		{	
 			perror("Error getting gpio chip info error message is: ");
-			return -1;
+			return ret;
 		}
 
-        if(strncmp(line_name, line_info.name, n) == 0)
+        if(strncmp(line_name, line_info.name, strlen(line_name)) == 0)
         {
             line_offset = line_info.offset;
-            printf("Found matching string %s and the offset is %d \n", line_name, line_offset);
-            close(chip_fd);
-            return line_offset;
+            printf("string1 %s string 2 %s offset is: %d\n", line_name, line_info.name, line_offset);
+            break;
         }
-        /*
-		printf("Name: %s\n",line_info.name);
-		printf("Consumer: %s\n",line_info.consumer);
-		printf("Offset: %d\n",line_info.offset);
-		printf("Num of attributes: %d\n",line_info.num_attrs);
-		printf("Flags: %llu\n",line_info.flags);
-		printf("************************************\n");
-        */
 	}
 
-    printf("Could not find the line\n");
-    return -1;
-
-
-    /*
     memset(&line_request, 0, sizeof(line_request));
-    line_request.offsets[0] = gpio_pin;
-    line_request.config = *config;
+    line_request.offsets[0] = line_offset;
+    line_request.config.flags = GPIO_V2_LINE_FLAG_INPUT;
     strncpy(line_request.consumer, CONSUMER, sizeof(line_request.consumer));
     line_request.num_lines = MAX_NO_OF_LINES_REQUESTED;
 
-    int ret = ioctl(chip_fd, GPIO_V2_GET_LINE_IOCTL, &line_request);
+    ret = ioctl(chip_fd, GPIO_V2_GET_LINE_IOCTL, &line_request);
     if(ret < 0)
     {
+
         close(chip_fd);
         return ret;
     }
 
+    //Add instance that it actually finishes the loop cuz it did not find anything
+
     close(chip_fd);
-    return line_request.fd;*/
+    return line_request.fd;
+}
+
+int gpio_get_line_value(unsigned int line_fd, bool* state)
+{
+    int ret;
+
+    struct gpio_v2_line_values line_values;
+
+    memset(&line_values, 0, sizeof(line_values));
+    line_values.mask = 1;
+
+    ret = ioctl(line_fd, GPIO_V2_LINE_GET_VALUES_IOCTL, line_values);
+    if(ret < 0)
+    {
+        perror("Ioctl fialed getting line vales\n");
+        return ret;
+    }
+
+    *state = line_values.bits == 1 ? true : false;
+
+    return 0;
+
+
 }
 
 
