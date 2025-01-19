@@ -1,0 +1,33 @@
+---
+:source:
+  :file: test/test_ime_lib.c
+  :dirname: test
+  :basename: test_ime_lib.c
+:successes:
+- :test: test_add_numbers
+  :line: 19
+  :message: ''
+  :unity_test_time: 0
+- :test: test_MakePoint_creates_new_point
+  :line: 25
+  :message: ''
+  :unity_test_time: 0
+- :test: test_MakePoint_Draw_Coordinates_pass
+  :line: 32
+  :message: ''
+  :unity_test_time: 0
+- :test: test_MakePoint_Draw_Coordinates_fail
+  :line: 40
+  :message: ''
+  :unity_test_time: 0
+:failures: []
+:ignores: []
+:counts:
+  :total: 4
+  :passed: 4
+  :failed: 0
+  :ignored: 0
+:stdout:
+- libgcov profiling error:/home/ime/Code_Repos/gpio_testing/unit_test/build/gcov/out/test_ime_lib/ime_lib.gcda:overwriting
+  an existing profile data with a different timestamp
+:time: 0.0008075500081758946
