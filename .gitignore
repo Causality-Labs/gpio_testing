@@ -3,4 +3,6 @@ oe-logs
 oe-workdir
 bin/*
 venv/*
-unit_test/build/**
+unit_test/build/test/
+unit_test/build/vendor/
+
