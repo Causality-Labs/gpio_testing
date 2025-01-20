@@ -22,6 +22,8 @@ extern void test_add_numbers(void);
 extern void test_MakePoint_creates_new_point(void);
 extern void test_MakePoint_Draw_Coordinates_pass(void);
 extern void test_MakePoint_Draw_Coordinates_fail(void);
+extern void test_ime_open_valid(void);
+extern void test_ime_open_invalid(void);
 
 
 /*=======Mock Management=====*/
@@ -107,16 +109,22 @@ static void run_test(UnityTestFunction func, const char* name, UNITY_LINE_TYPE l
       UNITY_PRINT_EOL();
       UnityPrint("  test_MakePoint_Draw_Coordinates_fail");
       UNITY_PRINT_EOL();
+      UnityPrint("  test_ime_open_valid");
+      UNITY_PRINT_EOL();
+      UnityPrint("  test_ime_open_invalid");
+      UNITY_PRINT_EOL();
       return 0;
     }
     return parse_status;
   }
 #endif
   UnityBegin("test_ime_lib.c");
-  run_test(test_add_numbers, "test_add_numbers", 22);
-  run_test(test_MakePoint_creates_new_point, "test_MakePoint_creates_new_point", 28);
-  run_test(test_MakePoint_Draw_Coordinates_pass, "test_MakePoint_Draw_Coordinates_pass", 35);
-  run_test(test_MakePoint_Draw_Coordinates_fail, "test_MakePoint_Draw_Coordinates_fail", 43);
+  run_test(test_add_numbers, "test_add_numbers", 25);
+  run_test(test_MakePoint_creates_new_point, "test_MakePoint_creates_new_point", 31);
+  run_test(test_MakePoint_Draw_Coordinates_pass, "test_MakePoint_Draw_Coordinates_pass", 38);
+  run_test(test_MakePoint_Draw_Coordinates_fail, "test_MakePoint_Draw_Coordinates_fail", 46);
+  run_test(test_ime_open_valid, "test_ime_open_valid", 54);
+  run_test(test_ime_open_invalid, "test_ime_open_invalid", 62);
 
   CMock_Guts_MemFreeFinal();
   return UNITY_END();

@@ -5,27 +5,35 @@
   :basename: test_ime_lib.c
 :successes:
 - :test: test_add_numbers
-  :line: 22
+  :line: 25
   :message: ''
   :unity_test_time: 0
 - :test: test_MakePoint_creates_new_point
-  :line: 28
+  :line: 31
   :message: ''
   :unity_test_time: 0
 - :test: test_MakePoint_Draw_Coordinates_pass
-  :line: 35
+  :line: 38
   :message: ''
   :unity_test_time: 0
 - :test: test_MakePoint_Draw_Coordinates_fail
-  :line: 43
+  :line: 46
+  :message: ''
+  :unity_test_time: 0
+- :test: test_ime_open_valid
+  :line: 54
+  :message: ''
+  :unity_test_time: 0
+- :test: test_ime_open_invalid
+  :line: 62
   :message: ''
   :unity_test_time: 0
 :failures: []
 :ignores: []
 :counts:
-  :total: 4
-  :passed: 4
+  :total: 6
+  :passed: 6
   :failed: 0
   :ignored: 0
 :stdout: []
-:time: 0.0006619580008191406
+:time: 0.0006019379943609238

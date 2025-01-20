@@ -33,37 +33,13 @@ void mock_syscalls_Verify(void);
 void open_CMockIgnoreAndReturn(UNITY_LINE_TYPE cmock_line, int cmock_to_return);
 #define open_StopIgnore() open_CMockStopIgnore()
 void open_CMockStopIgnore(void);
-#define open_Expect(pathname, flags) TEST_FAIL_MESSAGE("open requires _ExpectAndReturn");
-#define open_ExpectAndReturn(pathname, flags, cmock_retval) open_CMockExpectAndReturn(__LINE__, pathname, flags, cmock_retval)
-void open_CMockExpectAndReturn(UNITY_LINE_TYPE cmock_line, const char* pathname, int flags, int cmock_to_return);
-typedef int (* CMOCK_open_CALLBACK)(const char* pathname, int flags, int cmock_num_calls);
+#define open_Expect(path, flag) TEST_FAIL_MESSAGE("open requires _ExpectAndReturn");
+#define open_ExpectAndReturn(path, flag, cmock_retval) open_CMockExpectAndReturn(__LINE__, path, flag, cmock_retval)
+void open_CMockExpectAndReturn(UNITY_LINE_TYPE cmock_line, char* path, int flag, int cmock_to_return);
+typedef int (* CMOCK_open_CALLBACK)(char* path, int flag, int cmock_num_calls);
 void open_AddCallback(CMOCK_open_CALLBACK Callback);
 void open_Stub(CMOCK_open_CALLBACK Callback);
 #define open_StubWithCallback open_Stub
-#define ioctl_Ignore() TEST_FAIL_MESSAGE("ioctl requires _IgnoreAndReturn");
-#define ioctl_IgnoreAndReturn(cmock_retval) ioctl_CMockIgnoreAndReturn(__LINE__, cmock_retval)
-void ioctl_CMockIgnoreAndReturn(UNITY_LINE_TYPE cmock_line, int cmock_to_return);
-#define ioctl_StopIgnore() ioctl_CMockStopIgnore()
-void ioctl_CMockStopIgnore(void);
-#define ioctl_Expect(fd, request) TEST_FAIL_MESSAGE("ioctl requires _ExpectAndReturn");
-#define ioctl_ExpectAndReturn(fd, request, cmock_retval) ioctl_CMockExpectAndReturn(__LINE__, fd, request, cmock_retval)
-void ioctl_CMockExpectAndReturn(UNITY_LINE_TYPE cmock_line, int fd, unsigned long request, int cmock_to_return);
-typedef int (* CMOCK_ioctl_CALLBACK)(int fd, unsigned long request, int cmock_num_calls);
-void ioctl_AddCallback(CMOCK_ioctl_CALLBACK Callback);
-void ioctl_Stub(CMOCK_ioctl_CALLBACK Callback);
-#define ioctl_StubWithCallback ioctl_Stub
-#define close_Ignore() TEST_FAIL_MESSAGE("close requires _IgnoreAndReturn");
-#define close_IgnoreAndReturn(cmock_retval) close_CMockIgnoreAndReturn(__LINE__, cmock_retval)
-void close_CMockIgnoreAndReturn(UNITY_LINE_TYPE cmock_line, int cmock_to_return);
-#define close_StopIgnore() close_CMockStopIgnore()
-void close_CMockStopIgnore(void);
-#define close_Expect(fd) TEST_FAIL_MESSAGE("close requires _ExpectAndReturn");
-#define close_ExpectAndReturn(fd, cmock_retval) close_CMockExpectAndReturn(__LINE__, fd, cmock_retval)
-void close_CMockExpectAndReturn(UNITY_LINE_TYPE cmock_line, int fd, int cmock_to_return);
-typedef int (* CMOCK_close_CALLBACK)(int fd, int cmock_num_calls);
-void close_AddCallback(CMOCK_close_CALLBACK Callback);
-void close_Stub(CMOCK_close_CALLBACK Callback);
-#define close_StubWithCallback close_Stub
 
 #ifdef __cplusplus
 }

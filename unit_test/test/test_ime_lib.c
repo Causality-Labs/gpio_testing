@@ -2,10 +2,13 @@
 #include "ime_lib.h"
 #include "mock_Display.h"
 #include "mock_syscalls.h"
-//#include <string.h>
+#include <string.h>
+
+#define EXISTING_FILE "here"
+#define NON_EXISTING_FILE "not_here"
 
 int Draw_Int_Callback(int x, int num_calls);
-//int open_Callback(const char *pathname, int flags, int num_calls);
+int open_Callback(const char *pathname, int flags, int num_calls);
 
 void setUp(void)
 {
@@ -48,12 +51,30 @@ void test_MakePoint_Draw_Coordinates_fail(void)
     TEST_ASSERT_EQUAL_INT(-1, ret);
 }
 
-// void test_ime_open_valid(void)
+void test_ime_open_valid(void)
+{
+    int ret = 0 ;
+    open_StubWithCallback(open_Callback);
+    ret = ime_open(EXISTING_FILE);
+    TEST_ASSERT_EQUAL_INT(0, ret);
+}
+
+void test_ime_open_invalid(void)
+{
+    int ret = 0 ;
+    open_StubWithCallback(open_Callback);
+    ret = ime_open(NON_EXISTING_FILE);
+    TEST_ASSERT_EQUAL_INT(-1, ret);
+}
+
+void test_ime_ioctl_valid(void)
+{
+    
+}
+
+// void test_ime_ioctl_invalid(void)
 // {
-//     int ret = 0 ;
-//     open_StubWithCallback(open_Callback);
-//     ret = ime_open(EXISTING_FILE);
-//     TEST_ASSERT_EQUAL_INT(0, ret);
+    
 // }
 
 int Draw_Int_Callback(int x, int num_calls)
@@ -65,12 +86,12 @@ int Draw_Int_Callback(int x, int num_calls)
     return 0;
 }
 
-// int open_Callback(const char *pathname, int flags, int num_calls)
-// {
-//     // if (strncmp(pathname, EXISTING_FILE, strlen(pathname)) != 0)
-//     // {
-//     //     return  -1;
-//     // }
+int open_Callback(const char *pathname, int flags, int num_calls)
+{
+    if (strncmp(pathname, EXISTING_FILE, strlen(pathname)) != 0)
+    {
+        return  -1;
+    }
 
-//     return 0;
-// }
+    return 0;
+}
