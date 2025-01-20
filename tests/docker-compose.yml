@@ -1,0 +1,7 @@
+services:
+  unit-tests:
+    build: .
+    volumes:
+      - ../:/root/gpio-testing
+    working_dir: /root/gpio-testing/tests
+    command: ceedling

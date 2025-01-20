@@ -3,6 +3,7 @@
 #include <fcntl.h>
 #include <string.h>
 #include <linux/gpio.h>
+#include <errno.h>
 
 
 int add_numbers(int x, int y)
@@ -72,7 +73,8 @@ int ime_ioctl(int fd, unsigned long request)
     ret = ioctl(fd, request, &chip_info);
     if(ret != 0)
     {
-        return -1;
+        ret = errno;
+        return ret;
     }
 
     return 0;

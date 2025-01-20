@@ -4,6 +4,7 @@
 #include "mock_syscalls.h"
 #include <string.h>
 #include <linux/gpio.h>
+#include <errno.h>
 
 #define EXISTING_FILE "here"
 #define NON_EXISTING_FILE "not_here"
@@ -81,7 +82,7 @@ void test_ime_ioctl_valid(void)
     TEST_ASSERT_EQUAL_INT(0, ret);
 }
 
-void test_ime_ioctl_invalid_fd(void)
+void test_ime_ioctl_invalid_fd_with_errno(void)
 {
     int ret = 0;
     int fd = -1;
@@ -89,26 +90,19 @@ void test_ime_ioctl_invalid_fd(void)
     ioctl_StubWithCallback(ioctl_Callback);
 
     ret = ime_ioctl(fd, GPIO_GET_CHIPINFO_IOCTL);
-    TEST_ASSERT_EQUAL_INT(-1, ret);
+    TEST_ASSERT_EQUAL_INT(EBADF , ret);
 }
 
-void test_ime_ioctl_invalid_request(void)
+void test_ime_ioctl_invalid_with_errno(void)
 {
     int ret = 0;
-    int fd = -1;
+    int fd = 5;
     struct gpiochip_info chip_info = {0};
     ioctl_StubWithCallback(ioctl_Callback);
 
     ret = ime_ioctl(fd, 0xFFFF);
-    TEST_ASSERT_EQUAL_INT(-1, ret);
+    TEST_ASSERT_EQUAL_INT(ENOTTY, ret);
 }
-
-
-
-// void test_ime_ioctl_invalid(void)
-// {
-    
-// }
 
 int Draw_Int_Callback(int x, int num_calls)
 {
@@ -130,17 +124,20 @@ int open_Callback(const char *pathname, int flags, int num_calls)
 
 int ioctl_Callback(int fd, unsigned long request, void *arg, int num_calls)
 {
+    struct gpiochip_info *chip_info;
     if (fd < 0)
     {
+        errno = EBADF;
         return -1;
     }
     switch (request)
     {
         case GPIO_GET_CHIPINFO_IOCTL:
-            struct gpiochip_info *chip_info = (struct gpiochip_info *)arg;
+            chip_info = (struct gpiochip_info *)arg;
             chip_info->lines = 8;
             break;
         default:
+            errno = ENOTTY;
             return -1;
     }
 
