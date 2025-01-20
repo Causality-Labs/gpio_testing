@@ -9,6 +9,7 @@
 #endif /* UNITY_EXCLUDE_FLOAT */
 #include "ime_lib.h"
 #include "mock_Display.h"
+#include "mock_syscalls.h"
 
 int GlobalExpectCount;
 int GlobalVerifyOrder;
@@ -30,14 +31,17 @@ static void CMock_Init(void)
   GlobalVerifyOrder = 0;
   GlobalOrderError = NULL;
   mock_Display_Init();
+  mock_syscalls_Init();
 }
 static void CMock_Verify(void)
 {
   mock_Display_Verify();
+  mock_syscalls_Verify();
 }
 static void CMock_Destroy(void)
 {
   mock_Display_Destroy();
+  mock_syscalls_Destroy();
 }
 
 /*=======Test Reset Options=====*/
@@ -109,10 +113,10 @@ static void run_test(UnityTestFunction func, const char* name, UNITY_LINE_TYPE l
   }
 #endif
   UnityBegin("test_ime_lib.c");
-  run_test(test_add_numbers, "test_add_numbers", 19);
-  run_test(test_MakePoint_creates_new_point, "test_MakePoint_creates_new_point", 25);
-  run_test(test_MakePoint_Draw_Coordinates_pass, "test_MakePoint_Draw_Coordinates_pass", 32);
-  run_test(test_MakePoint_Draw_Coordinates_fail, "test_MakePoint_Draw_Coordinates_fail", 40);
+  run_test(test_add_numbers, "test_add_numbers", 22);
+  run_test(test_MakePoint_creates_new_point, "test_MakePoint_creates_new_point", 28);
+  run_test(test_MakePoint_Draw_Coordinates_pass, "test_MakePoint_Draw_Coordinates_pass", 35);
+  run_test(test_MakePoint_Draw_Coordinates_fail, "test_MakePoint_Draw_Coordinates_fail", 43);
 
   CMock_Guts_MemFreeFinal();
   return UNITY_END();

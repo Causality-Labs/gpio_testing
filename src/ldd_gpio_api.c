@@ -9,16 +9,14 @@
  * regarding its accuracy, completeness or performance.
  */
 /**
- * @brief   Pearl Implementation of the logical device driver for
- *          reading PSU alarm contacts
- * @author  Hubert Bugajski
- * @date    August 31, 2017
+ * @brief   Generic logical device driver API for GPIOs.
+ * @author  Ime Asamudo
+ * @date    December 5, 2024
  *
  ***************************************************************/
 #include <stdio.h>
 #include <stdint.h>
 
-// #include <linux/gpio.h>
 #include "ldd_gpio_api.h"
 #include <sys/ioctl.h>
 #include <errno.h>

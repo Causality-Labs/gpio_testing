@@ -40,6 +40,18 @@ typedef int (* CMOCK_open_CALLBACK)(const char* pathname, int flags, int cmock_n
 void open_AddCallback(CMOCK_open_CALLBACK Callback);
 void open_Stub(CMOCK_open_CALLBACK Callback);
 #define open_StubWithCallback open_Stub
+#define ioctl_Ignore() TEST_FAIL_MESSAGE("ioctl requires _IgnoreAndReturn");
+#define ioctl_IgnoreAndReturn(cmock_retval) ioctl_CMockIgnoreAndReturn(__LINE__, cmock_retval)
+void ioctl_CMockIgnoreAndReturn(UNITY_LINE_TYPE cmock_line, int cmock_to_return);
+#define ioctl_StopIgnore() ioctl_CMockStopIgnore()
+void ioctl_CMockStopIgnore(void);
+#define ioctl_Expect(fd, request) TEST_FAIL_MESSAGE("ioctl requires _ExpectAndReturn");
+#define ioctl_ExpectAndReturn(fd, request, cmock_retval) ioctl_CMockExpectAndReturn(__LINE__, fd, request, cmock_retval)
+void ioctl_CMockExpectAndReturn(UNITY_LINE_TYPE cmock_line, int fd, unsigned long request, int cmock_to_return);
+typedef int (* CMOCK_ioctl_CALLBACK)(int fd, unsigned long request, int cmock_num_calls);
+void ioctl_AddCallback(CMOCK_ioctl_CALLBACK Callback);
+void ioctl_Stub(CMOCK_ioctl_CALLBACK Callback);
+#define ioctl_StubWithCallback ioctl_Stub
 #define close_Ignore() TEST_FAIL_MESSAGE("close requires _IgnoreAndReturn");
 #define close_IgnoreAndReturn(cmock_retval) close_CMockIgnoreAndReturn(__LINE__, cmock_retval)
 void close_CMockIgnoreAndReturn(UNITY_LINE_TYPE cmock_line, int cmock_to_return);
@@ -52,18 +64,6 @@ typedef int (* CMOCK_close_CALLBACK)(int fd, int cmock_num_calls);
 void close_AddCallback(CMOCK_close_CALLBACK Callback);
 void close_Stub(CMOCK_close_CALLBACK Callback);
 #define close_StubWithCallback close_Stub
-#define ioctl_Ignore() TEST_FAIL_MESSAGE("ioctl requires _IgnoreAndReturn");
-#define ioctl_IgnoreAndReturn(cmock_retval) ioctl_CMockIgnoreAndReturn(__LINE__, cmock_retval)
-void ioctl_CMockIgnoreAndReturn(UNITY_LINE_TYPE cmock_line, int cmock_to_return);
-#define ioctl_StopIgnore() ioctl_CMockStopIgnore()
-void ioctl_CMockStopIgnore(void);
-#define ioctl_Expect(fd, request, arg) TEST_FAIL_MESSAGE("ioctl requires _ExpectAndReturn");
-#define ioctl_ExpectAndReturn(fd, request, arg, cmock_retval) ioctl_CMockExpectAndReturn(__LINE__, fd, request, arg, cmock_retval)
-void ioctl_CMockExpectAndReturn(UNITY_LINE_TYPE cmock_line, int fd, unsigned long request, void* arg, int cmock_to_return);
-typedef int (* CMOCK_ioctl_CALLBACK)(int fd, unsigned long request, void* arg, int cmock_num_calls);
-void ioctl_AddCallback(CMOCK_ioctl_CALLBACK Callback);
-void ioctl_Stub(CMOCK_ioctl_CALLBACK Callback);
-#define ioctl_StubWithCallback ioctl_Stub
 
 #ifdef __cplusplus
 }

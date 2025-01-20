@@ -1,8 +1,11 @@
 #include "unity.h"
 #include "ime_lib.h"
 #include "mock_Display.h"
+#include "mock_syscalls.h"
+//#include <string.h>
 
 int Draw_Int_Callback(int x, int num_calls);
+//int open_Callback(const char *pathname, int flags, int num_calls);
 
 void setUp(void)
 {
@@ -45,6 +48,14 @@ void test_MakePoint_Draw_Coordinates_fail(void)
     TEST_ASSERT_EQUAL_INT(-1, ret);
 }
 
+// void test_ime_open_valid(void)
+// {
+//     int ret = 0 ;
+//     open_StubWithCallback(open_Callback);
+//     ret = ime_open(EXISTING_FILE);
+//     TEST_ASSERT_EQUAL_INT(0, ret);
+// }
+
 int Draw_Int_Callback(int x, int num_calls)
 {
     if(x < 0)
@@ -53,3 +64,13 @@ int Draw_Int_Callback(int x, int num_calls)
     }
     return 0;
 }
+
+// int open_Callback(const char *pathname, int flags, int num_calls)
+// {
+//     // if (strncmp(pathname, EXISTING_FILE, strlen(pathname)) != 0)
+//     // {
+//     //     return  -1;
+//     // }
+
+//     return 0;
+// }

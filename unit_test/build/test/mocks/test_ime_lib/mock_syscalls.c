@@ -5,7 +5,6 @@
 #include "cmock.h"
 #include "mock_syscalls.h"
 
-static const char* CMockString_arg = "arg";
 static const char* CMockString_close = "close";
 static const char* CMockString_fd = "fd";
 static const char* CMockString_flags = "flags";
@@ -24,6 +23,16 @@ typedef struct _CMOCK_open_CALL_INSTANCE
 
 } CMOCK_open_CALL_INSTANCE;
 
+typedef struct _CMOCK_ioctl_CALL_INSTANCE
+{
+  UNITY_LINE_TYPE LineNumber;
+  int ReturnVal;
+  int CallOrder;
+  int Expected_fd;
+  unsigned long Expected_request;
+
+} CMOCK_ioctl_CALL_INSTANCE;
+
 typedef struct _CMOCK_close_CALL_INSTANCE
 {
   UNITY_LINE_TYPE LineNumber;
@@ -33,17 +42,6 @@ typedef struct _CMOCK_close_CALL_INSTANCE
 
 } CMOCK_close_CALL_INSTANCE;
 
-typedef struct _CMOCK_ioctl_CALL_INSTANCE
-{
-  UNITY_LINE_TYPE LineNumber;
-  int ReturnVal;
-  int CallOrder;
-  int Expected_fd;
-  unsigned long Expected_request;
-  void* Expected_arg;
-
-} CMOCK_ioctl_CALL_INSTANCE;
-
 static struct mock_syscallsInstance
 {
   char open_IgnoreBool;
@@ -52,18 +50,18 @@ static struct mock_syscallsInstance
   CMOCK_open_CALLBACK open_CallbackFunctionPointer;
   int open_CallbackCalls;
   CMOCK_MEM_INDEX_TYPE open_CallInstance;
-  char close_IgnoreBool;
-  int close_FinalReturn;
-  char close_CallbackBool;
-  CMOCK_close_CALLBACK close_CallbackFunctionPointer;
-  int close_CallbackCalls;
-  CMOCK_MEM_INDEX_TYPE close_CallInstance;
   char ioctl_IgnoreBool;
   int ioctl_FinalReturn;
   char ioctl_CallbackBool;
   CMOCK_ioctl_CALLBACK ioctl_CallbackFunctionPointer;
   int ioctl_CallbackCalls;
   CMOCK_MEM_INDEX_TYPE ioctl_CallInstance;
+  char close_IgnoreBool;
+  int close_FinalReturn;
+  char close_CallbackBool;
+  CMOCK_close_CALLBACK close_CallbackFunctionPointer;
+  int close_CallbackCalls;
+  CMOCK_MEM_INDEX_TYPE close_CallInstance;
 } Mock;
 
 extern int GlobalExpectCount;
@@ -86,19 +84,6 @@ void mock_syscalls_Verify(void)
     call_instance = CMOCK_GUTS_NONE;
     (void)call_instance;
   }
-  call_instance = Mock.close_CallInstance;
-  if (Mock.close_IgnoreBool)
-    call_instance = CMOCK_GUTS_NONE;
-  if (CMOCK_GUTS_NONE != call_instance)
-  {
-    UNITY_SET_DETAIL(CMockString_close);
-    UNITY_TEST_FAIL(cmock_line, CMockStringCalledLess);
-  }
-  if (Mock.close_CallbackFunctionPointer != NULL)
-  {
-    call_instance = CMOCK_GUTS_NONE;
-    (void)call_instance;
-  }
   call_instance = Mock.ioctl_CallInstance;
   if (Mock.ioctl_IgnoreBool)
     call_instance = CMOCK_GUTS_NONE;
@@ -108,6 +93,19 @@ void mock_syscalls_Verify(void)
     UNITY_TEST_FAIL(cmock_line, CMockStringCalledLess);
   }
   if (Mock.ioctl_CallbackFunctionPointer != NULL)
+  {
+    call_instance = CMOCK_GUTS_NONE;
+    (void)call_instance;
+  }
+  call_instance = Mock.close_CallInstance;
+  if (Mock.close_IgnoreBool)
+    call_instance = CMOCK_GUTS_NONE;
+  if (CMOCK_GUTS_NONE != call_instance)
+  {
+    UNITY_SET_DETAIL(CMockString_close);
+    UNITY_TEST_FAIL(cmock_line, CMockStringCalledLess);
+  }
+  if (Mock.close_CallbackFunctionPointer != NULL)
   {
     call_instance = CMOCK_GUTS_NONE;
     (void)call_instance;
@@ -226,6 +224,105 @@ void open_Stub(CMOCK_open_CALLBACK Callback)
   Mock.open_CallbackFunctionPointer = Callback;
 }
 
+int ioctl(int fd, unsigned long request, ...)
+{
+  UNITY_LINE_TYPE cmock_line = TEST_LINE_NUM;
+  CMOCK_ioctl_CALL_INSTANCE* cmock_call_instance;
+  UNITY_SET_DETAIL(CMockString_ioctl);
+  cmock_call_instance = (CMOCK_ioctl_CALL_INSTANCE*)CMock_Guts_GetAddressFor(Mock.ioctl_CallInstance);
+  Mock.ioctl_CallInstance = CMock_Guts_MemNext(Mock.ioctl_CallInstance);
+  if (Mock.ioctl_IgnoreBool)
+  {
+    UNITY_CLR_DETAILS();
+    if (cmock_call_instance == NULL)
+      return Mock.ioctl_FinalReturn;
+    Mock.ioctl_FinalReturn = cmock_call_instance->ReturnVal;
+    return cmock_call_instance->ReturnVal;
+  }
+  if (!Mock.ioctl_CallbackBool &&
+      Mock.ioctl_CallbackFunctionPointer != NULL)
+  {
+    int cmock_cb_ret = Mock.ioctl_CallbackFunctionPointer(fd, request, Mock.ioctl_CallbackCalls++);
+    UNITY_CLR_DETAILS();
+    return cmock_cb_ret;
+  }
+  UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, CMockStringCalledMore);
+  cmock_line = cmock_call_instance->LineNumber;
+  if (cmock_call_instance->CallOrder > ++GlobalVerifyOrder)
+    UNITY_TEST_FAIL(cmock_line, CMockStringCalledEarly);
+  if (cmock_call_instance->CallOrder < GlobalVerifyOrder)
+    UNITY_TEST_FAIL(cmock_line, CMockStringCalledLate);
+  {
+    UNITY_SET_DETAILS(CMockString_ioctl,CMockString_fd);
+    UNITY_TEST_ASSERT_EQUAL_INT(cmock_call_instance->Expected_fd, fd, cmock_line, CMockStringMismatch);
+  }
+  {
+    UNITY_SET_DETAILS(CMockString_ioctl,CMockString_request);
+    UNITY_TEST_ASSERT_EQUAL_HEX32(cmock_call_instance->Expected_request, request, cmock_line, CMockStringMismatch);
+  }
+  if (Mock.ioctl_CallbackFunctionPointer != NULL)
+  {
+    cmock_call_instance->ReturnVal = Mock.ioctl_CallbackFunctionPointer(fd, request, Mock.ioctl_CallbackCalls++);
+  }
+  UNITY_CLR_DETAILS();
+  return cmock_call_instance->ReturnVal;
+}
+
+void CMockExpectParameters_ioctl(CMOCK_ioctl_CALL_INSTANCE* cmock_call_instance, int fd, unsigned long request);
+void CMockExpectParameters_ioctl(CMOCK_ioctl_CALL_INSTANCE* cmock_call_instance, int fd, unsigned long request)
+{
+  cmock_call_instance->Expected_fd = fd;
+  cmock_call_instance->Expected_request = request;
+}
+
+void ioctl_CMockIgnoreAndReturn(UNITY_LINE_TYPE cmock_line, int cmock_to_return)
+{
+  CMOCK_MEM_INDEX_TYPE cmock_guts_index = CMock_Guts_MemNew(sizeof(CMOCK_ioctl_CALL_INSTANCE));
+  CMOCK_ioctl_CALL_INSTANCE* cmock_call_instance = (CMOCK_ioctl_CALL_INSTANCE*)CMock_Guts_GetAddressFor(cmock_guts_index);
+  UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, CMockStringOutOfMemory);
+  memset(cmock_call_instance, 0, sizeof(*cmock_call_instance));
+  Mock.ioctl_CallInstance = CMock_Guts_MemChain(Mock.ioctl_CallInstance, cmock_guts_index);
+  Mock.ioctl_IgnoreBool = (char)0;
+  cmock_call_instance->LineNumber = cmock_line;
+  cmock_call_instance->ReturnVal = cmock_to_return;
+  Mock.ioctl_IgnoreBool = (char)1;
+}
+
+void ioctl_CMockStopIgnore(void)
+{
+  if(Mock.ioctl_IgnoreBool)
+    Mock.ioctl_CallInstance = CMock_Guts_MemNext(Mock.ioctl_CallInstance);
+  Mock.ioctl_IgnoreBool = (char)0;
+}
+
+void ioctl_CMockExpectAndReturn(UNITY_LINE_TYPE cmock_line, int fd, unsigned long request, int cmock_to_return)
+{
+  CMOCK_MEM_INDEX_TYPE cmock_guts_index = CMock_Guts_MemNew(sizeof(CMOCK_ioctl_CALL_INSTANCE));
+  CMOCK_ioctl_CALL_INSTANCE* cmock_call_instance = (CMOCK_ioctl_CALL_INSTANCE*)CMock_Guts_GetAddressFor(cmock_guts_index);
+  UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, CMockStringOutOfMemory);
+  memset(cmock_call_instance, 0, sizeof(*cmock_call_instance));
+  Mock.ioctl_CallInstance = CMock_Guts_MemChain(Mock.ioctl_CallInstance, cmock_guts_index);
+  Mock.ioctl_IgnoreBool = (char)0;
+  cmock_call_instance->LineNumber = cmock_line;
+  cmock_call_instance->CallOrder = ++GlobalExpectCount;
+  CMockExpectParameters_ioctl(cmock_call_instance, fd, request);
+  cmock_call_instance->ReturnVal = cmock_to_return;
+}
+
+void ioctl_AddCallback(CMOCK_ioctl_CALLBACK Callback)
+{
+  Mock.ioctl_IgnoreBool = (char)0;
+  Mock.ioctl_CallbackBool = (char)1;
+  Mock.ioctl_CallbackFunctionPointer = Callback;
+}
+
+void ioctl_Stub(CMOCK_ioctl_CALLBACK Callback)
+{
+  Mock.ioctl_IgnoreBool = (char)0;
+  Mock.ioctl_CallbackBool = (char)0;
+  Mock.ioctl_CallbackFunctionPointer = Callback;
+}
+
 int close(int fd)
 {
   UNITY_LINE_TYPE cmock_line = TEST_LINE_NUM;
@@ -318,112 +415,5 @@ void close_Stub(CMOCK_close_CALLBACK Callback)
   Mock.close_IgnoreBool = (char)0;
   Mock.close_CallbackBool = (char)0;
   Mock.close_CallbackFunctionPointer = Callback;
-}
-
-int ioctl(int fd, unsigned long request, void* arg)
-{
-  UNITY_LINE_TYPE cmock_line = TEST_LINE_NUM;
-  CMOCK_ioctl_CALL_INSTANCE* cmock_call_instance;
-  UNITY_SET_DETAIL(CMockString_ioctl);
-  cmock_call_instance = (CMOCK_ioctl_CALL_INSTANCE*)CMock_Guts_GetAddressFor(Mock.ioctl_CallInstance);
-  Mock.ioctl_CallInstance = CMock_Guts_MemNext(Mock.ioctl_CallInstance);
-  if (Mock.ioctl_IgnoreBool)
-  {
-    UNITY_CLR_DETAILS();
-    if (cmock_call_instance == NULL)
-      return Mock.ioctl_FinalReturn;
-    Mock.ioctl_FinalReturn = cmock_call_instance->ReturnVal;
-    return cmock_call_instance->ReturnVal;
-  }
-  if (!Mock.ioctl_CallbackBool &&
-      Mock.ioctl_CallbackFunctionPointer != NULL)
-  {
-    int cmock_cb_ret = Mock.ioctl_CallbackFunctionPointer(fd, request, arg, Mock.ioctl_CallbackCalls++);
-    UNITY_CLR_DETAILS();
-    return cmock_cb_ret;
-  }
-  UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, CMockStringCalledMore);
-  cmock_line = cmock_call_instance->LineNumber;
-  if (cmock_call_instance->CallOrder > ++GlobalVerifyOrder)
-    UNITY_TEST_FAIL(cmock_line, CMockStringCalledEarly);
-  if (cmock_call_instance->CallOrder < GlobalVerifyOrder)
-    UNITY_TEST_FAIL(cmock_line, CMockStringCalledLate);
-  {
-    UNITY_SET_DETAILS(CMockString_ioctl,CMockString_fd);
-    UNITY_TEST_ASSERT_EQUAL_INT(cmock_call_instance->Expected_fd, fd, cmock_line, CMockStringMismatch);
-  }
-  {
-    UNITY_SET_DETAILS(CMockString_ioctl,CMockString_request);
-    UNITY_TEST_ASSERT_EQUAL_HEX32(cmock_call_instance->Expected_request, request, cmock_line, CMockStringMismatch);
-  }
-  {
-    UNITY_SET_DETAILS(CMockString_ioctl,CMockString_arg);
-    if (cmock_call_instance->Expected_arg == NULL)
-      { UNITY_TEST_ASSERT_NULL(arg, cmock_line, CMockStringExpNULL); }
-    else
-      { UNITY_TEST_ASSERT_EQUAL_HEX8_ARRAY(cmock_call_instance->Expected_arg, arg, 1, cmock_line, CMockStringMismatch); }
-  }
-  if (Mock.ioctl_CallbackFunctionPointer != NULL)
-  {
-    cmock_call_instance->ReturnVal = Mock.ioctl_CallbackFunctionPointer(fd, request, arg, Mock.ioctl_CallbackCalls++);
-  }
-  UNITY_CLR_DETAILS();
-  return cmock_call_instance->ReturnVal;
-}
-
-void CMockExpectParameters_ioctl(CMOCK_ioctl_CALL_INSTANCE* cmock_call_instance, int fd, unsigned long request, void* arg);
-void CMockExpectParameters_ioctl(CMOCK_ioctl_CALL_INSTANCE* cmock_call_instance, int fd, unsigned long request, void* arg)
-{
-  cmock_call_instance->Expected_fd = fd;
-  cmock_call_instance->Expected_request = request;
-  cmock_call_instance->Expected_arg = arg;
-}
-
-void ioctl_CMockIgnoreAndReturn(UNITY_LINE_TYPE cmock_line, int cmock_to_return)
-{
-  CMOCK_MEM_INDEX_TYPE cmock_guts_index = CMock_Guts_MemNew(sizeof(CMOCK_ioctl_CALL_INSTANCE));
-  CMOCK_ioctl_CALL_INSTANCE* cmock_call_instance = (CMOCK_ioctl_CALL_INSTANCE*)CMock_Guts_GetAddressFor(cmock_guts_index);
-  UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, CMockStringOutOfMemory);
-  memset(cmock_call_instance, 0, sizeof(*cmock_call_instance));
-  Mock.ioctl_CallInstance = CMock_Guts_MemChain(Mock.ioctl_CallInstance, cmock_guts_index);
-  Mock.ioctl_IgnoreBool = (char)0;
-  cmock_call_instance->LineNumber = cmock_line;
-  cmock_call_instance->ReturnVal = cmock_to_return;
-  Mock.ioctl_IgnoreBool = (char)1;
-}
-
-void ioctl_CMockStopIgnore(void)
-{
-  if(Mock.ioctl_IgnoreBool)
-    Mock.ioctl_CallInstance = CMock_Guts_MemNext(Mock.ioctl_CallInstance);
-  Mock.ioctl_IgnoreBool = (char)0;
-}
-
-void ioctl_CMockExpectAndReturn(UNITY_LINE_TYPE cmock_line, int fd, unsigned long request, void* arg, int cmock_to_return)
-{
-  CMOCK_MEM_INDEX_TYPE cmock_guts_index = CMock_Guts_MemNew(sizeof(CMOCK_ioctl_CALL_INSTANCE));
-  CMOCK_ioctl_CALL_INSTANCE* cmock_call_instance = (CMOCK_ioctl_CALL_INSTANCE*)CMock_Guts_GetAddressFor(cmock_guts_index);
-  UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, CMockStringOutOfMemory);
-  memset(cmock_call_instance, 0, sizeof(*cmock_call_instance));
-  Mock.ioctl_CallInstance = CMock_Guts_MemChain(Mock.ioctl_CallInstance, cmock_guts_index);
-  Mock.ioctl_IgnoreBool = (char)0;
-  cmock_call_instance->LineNumber = cmock_line;
-  cmock_call_instance->CallOrder = ++GlobalExpectCount;
-  CMockExpectParameters_ioctl(cmock_call_instance, fd, request, arg);
-  cmock_call_instance->ReturnVal = cmock_to_return;
-}
-
-void ioctl_AddCallback(CMOCK_ioctl_CALLBACK Callback)
-{
-  Mock.ioctl_IgnoreBool = (char)0;
-  Mock.ioctl_CallbackBool = (char)1;
-  Mock.ioctl_CallbackFunctionPointer = Callback;
-}
-
-void ioctl_Stub(CMOCK_ioctl_CALLBACK Callback)
-{
-  Mock.ioctl_IgnoreBool = (char)0;
-  Mock.ioctl_CallbackBool = (char)0;
-  Mock.ioctl_CallbackFunctionPointer = Callback;
 }
 

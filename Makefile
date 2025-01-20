@@ -10,7 +10,8 @@ endif
 
 ################################## RULES ##################################
 APP_OBJECTS += $(BINDIR)/gpio-test.o
-APP_OBJECTS += $(BINDIR)/gpio_driver.o
+APP_OBJECTS += $(BINDIR)/ldd_gpio_api.o
+APP_OBJECTS += $(BINDIR)/ime_lib.o
 
 
 $(BINDIR)/%.o: $(SRCDIR)/%.c
