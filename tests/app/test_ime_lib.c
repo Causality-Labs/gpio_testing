@@ -85,8 +85,7 @@ void test_ime_ioctl_valid(void)
 void test_ime_ioctl_invalid_fd_with_errno(void)
 {
     int ret = 0;
-    int fd = -1;
-    struct gpiochip_info chip_info = {0};
+    int fd = -1
     ioctl_StubWithCallback(ioctl_Callback);
 
     ret = ime_ioctl(fd, GPIO_GET_CHIPINFO_IOCTL);
@@ -97,7 +96,7 @@ void test_ime_ioctl_invalid_with_errno(void)
 {
     int ret = 0;
     int fd = 5;
-    struct gpiochip_info chip_info = {0};
+    //struct gpiochip_info chip_info = {0};
     ioctl_StubWithCallback(ioctl_Callback);
 
     ret = ime_ioctl(fd, 0xFFFF);
