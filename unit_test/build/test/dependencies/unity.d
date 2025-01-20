@@ -1,2 +1,0 @@
-build/test/out/test_ime_lib/unity.o: build/vendor/unity/src/unity.c \
- build/vendor/unity/src/unity.h build/vendor/unity/src/unity_internals.h
