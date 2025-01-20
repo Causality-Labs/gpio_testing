@@ -2,6 +2,7 @@
 #include "Display.h"
 #include <fcntl.h>
 #include <string.h>
+#include <linux/gpio.h>
 
 
 int add_numbers(int x, int y)
@@ -49,16 +50,30 @@ int init_Display(int x, int y)
     return 0;    
 }
 
-// int ime_open(const char * file_name)
-// {
-//     int ret = 0;
+int ime_open(const char * file_name)
+{
+    int ret = 0;
 
-//     ret = open(EXISTING_FILE, O_RDWR);
+    ret = open(file_name, O_RDWR);
 
-//     if (ret < 0)
-//     {
-//         return -1;
-//     }
+    if (ret < 0)
+    {
+        return -1;
+    }
     
-//     return ret;
-// }
+    return ret;
+}
+
+int ime_ioctl(int fd, unsigned long request)
+{
+    int ret = 0;
+    struct gpiochip_info chip_info = {0};
+
+    ret = ioctl(fd, request, &chip_info);
+    if(ret != 0)
+    {
+        return -1;
+    }
+
+    return 0;
+}

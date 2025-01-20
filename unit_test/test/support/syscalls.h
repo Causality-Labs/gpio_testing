@@ -7,7 +7,7 @@
 
 
 int open(char *path, int flag, ...);
-//int ioctl(int fd, unsigned long request, ...);
+int ioctl(int fd, unsigned long request, void *arg);
 //int close(int fd);
 
 #endif // SYSCALLS_H

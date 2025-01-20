@@ -24,6 +24,9 @@ extern void test_MakePoint_Draw_Coordinates_pass(void);
 extern void test_MakePoint_Draw_Coordinates_fail(void);
 extern void test_ime_open_valid(void);
 extern void test_ime_open_invalid(void);
+extern void test_ime_ioctl_valid(void);
+extern void test_ime_ioctl_invalid_fd(void);
+extern void test_ime_ioctl_invalid_request(void);
 
 
 /*=======Mock Management=====*/
@@ -113,18 +116,27 @@ static void run_test(UnityTestFunction func, const char* name, UNITY_LINE_TYPE l
       UNITY_PRINT_EOL();
       UnityPrint("  test_ime_open_invalid");
       UNITY_PRINT_EOL();
+      UnityPrint("  test_ime_ioctl_valid");
+      UNITY_PRINT_EOL();
+      UnityPrint("  test_ime_ioctl_invalid_fd");
+      UNITY_PRINT_EOL();
+      UnityPrint("  test_ime_ioctl_invalid_request");
+      UNITY_PRINT_EOL();
       return 0;
     }
     return parse_status;
   }
 #endif
   UnityBegin("test_ime_lib.c");
-  run_test(test_add_numbers, "test_add_numbers", 25);
-  run_test(test_MakePoint_creates_new_point, "test_MakePoint_creates_new_point", 31);
-  run_test(test_MakePoint_Draw_Coordinates_pass, "test_MakePoint_Draw_Coordinates_pass", 38);
-  run_test(test_MakePoint_Draw_Coordinates_fail, "test_MakePoint_Draw_Coordinates_fail", 46);
-  run_test(test_ime_open_valid, "test_ime_open_valid", 54);
-  run_test(test_ime_open_invalid, "test_ime_open_invalid", 62);
+  run_test(test_add_numbers, "test_add_numbers", 27);
+  run_test(test_MakePoint_creates_new_point, "test_MakePoint_creates_new_point", 33);
+  run_test(test_MakePoint_Draw_Coordinates_pass, "test_MakePoint_Draw_Coordinates_pass", 40);
+  run_test(test_MakePoint_Draw_Coordinates_fail, "test_MakePoint_Draw_Coordinates_fail", 48);
+  run_test(test_ime_open_valid, "test_ime_open_valid", 56);
+  run_test(test_ime_open_invalid, "test_ime_open_invalid", 64);
+  run_test(test_ime_ioctl_valid, "test_ime_ioctl_valid", 73);
+  run_test(test_ime_ioctl_invalid_fd, "test_ime_ioctl_invalid_fd", 84);
+  run_test(test_ime_ioctl_invalid_request, "test_ime_ioctl_invalid_request", 95);
 
   CMock_Guts_MemFreeFinal();
   return UNITY_END();

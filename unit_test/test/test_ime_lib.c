@@ -3,12 +3,14 @@
 #include "mock_Display.h"
 #include "mock_syscalls.h"
 #include <string.h>
+#include <linux/gpio.h>
 
 #define EXISTING_FILE "here"
 #define NON_EXISTING_FILE "not_here"
 
 int Draw_Int_Callback(int x, int num_calls);
 int open_Callback(const char *pathname, int flags, int num_calls);
+int ioctl_Callback(int fd, unsigned long request, void *arg, int num_calls);
 
 void setUp(void)
 {
@@ -61,16 +63,47 @@ void test_ime_open_valid(void)
 
 void test_ime_open_invalid(void)
 {
-    int ret = 0 ;
+    int ret = 0;
     open_StubWithCallback(open_Callback);
+
     ret = ime_open(NON_EXISTING_FILE);
     TEST_ASSERT_EQUAL_INT(-1, ret);
 }
 
 void test_ime_ioctl_valid(void)
 {
-    
+    int ret = 0;
+    int fd = 2;
+    struct gpiochip_info chip_info = {0};
+    ioctl_StubWithCallback(ioctl_Callback);
+
+    ret = ime_ioctl(fd, GPIO_GET_CHIPINFO_IOCTL);
+    TEST_ASSERT_EQUAL_INT(0, ret);
 }
+
+void test_ime_ioctl_invalid_fd(void)
+{
+    int ret = 0;
+    int fd = -1;
+    struct gpiochip_info chip_info = {0};
+    ioctl_StubWithCallback(ioctl_Callback);
+
+    ret = ime_ioctl(fd, GPIO_GET_CHIPINFO_IOCTL);
+    TEST_ASSERT_EQUAL_INT(-1, ret);
+}
+
+void test_ime_ioctl_invalid_request(void)
+{
+    int ret = 0;
+    int fd = -1;
+    struct gpiochip_info chip_info = {0};
+    ioctl_StubWithCallback(ioctl_Callback);
+
+    ret = ime_ioctl(fd, 0xFFFF);
+    TEST_ASSERT_EQUAL_INT(-1, ret);
+}
+
+
 
 // void test_ime_ioctl_invalid(void)
 // {
@@ -91,6 +124,24 @@ int open_Callback(const char *pathname, int flags, int num_calls)
     if (strncmp(pathname, EXISTING_FILE, strlen(pathname)) != 0)
     {
         return  -1;
+    }
+    return 0;
+}
+
+int ioctl_Callback(int fd, unsigned long request, void *arg, int num_calls)
+{
+    if (fd < 0)
+    {
+        return -1;
+    }
+    switch (request)
+    {
+        case GPIO_GET_CHIPINFO_IOCTL:
+            struct gpiochip_info *chip_info = (struct gpiochip_info *)arg;
+            chip_info->lines = 8;
+            break;
+        default:
+            return -1;
     }
 
     return 0;
