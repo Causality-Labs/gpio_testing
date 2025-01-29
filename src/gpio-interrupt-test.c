@@ -13,7 +13,7 @@
 
 struct gpio_line gpio_line = 
 {
-	.name = "geoloc_gpio",
+	.name = "gps_ant_overcurrent_gpio",
 	.fd = -1,
 	.state = false
 };
@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
 {
 	(void)argc;
 	(void)argv;
-	
+
 	int ret = 0;
     ret = gpio_line_request("/dev/gpiochip5", gpio_line.name,
                              GPIO_V2_LINE_FLAG_INPUT | GPIO_V2_LINE_FLAG_EDGE_RISING | GPIO_V2_LINE_FLAG_EDGE_FALLING, 

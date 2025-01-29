@@ -161,7 +161,7 @@ int gpio_get_line_event(int line_fd, enum gpio_v2_line_event_id *line_event)
         case GPIO_V2_LINE_EVENT_RISING_EDGE:
         case GPIO_V2_LINE_EVENT_FALLING_EDGE:
             *line_event = event.id;
-            return EINVAL;
+            return 0;
         default:
             return EINVAL;
     }

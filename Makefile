@@ -10,7 +10,7 @@ INCLUDEDIR   := inc
 INTERRUPT_TEST := gpio-interrupt-test
 
 # Compiler and Flags
-CC     := gcc
+CC     := $(CROSS_COMPILER)gcc
 CFLAGS := -Wall -Wextra -std=c99
 LDFLAGS :=
 

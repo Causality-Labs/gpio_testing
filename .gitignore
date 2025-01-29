@@ -4,4 +4,5 @@ oe-workdir
 bin/*
 venv/*
 tests/build/
+gpio_lib/obj/*
 
