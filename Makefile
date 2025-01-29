@@ -1,29 +1,53 @@
-BINDIR = bin
-INCLUDEDIR = inc
-SRCDIR = src
+# Directories
+BINDIR       := bin
+LIBDIR       := gpio_lib
+LIBSRCDIR    := $(LIBDIR)/src
+LIBINCDIR    := $(LIBDIR)/inc
+SRCDIR       := src
+INCLUDEDIR   := inc
 
-APP = gpio-test
+# Target executable name
+INTERRUPT_TEST := gpio-interrupt-test
 
-ifndef CFLAGS
-	CFLAGS += -D_POSIX_C_SOURCE=2 -std=c99
-endif
+# Compiler and Flags
+CC     := gcc
+CFLAGS := -Wall -Wextra -std=c99
+LDFLAGS :=
 
-################################## RULES ##################################
-APP_OBJECTS += $(BINDIR)/gpio-test.o
-APP_OBJECTS += $(BINDIR)/ldd_gpio_api.o
-APP_OBJECTS += $(BINDIR)/ime_lib.o
+# Object files for the library and the app
+LIB_OBJECTS  := $(BINDIR)/ldd_gpio_api.o
+APP_OBJECTS  := $(BINDIR)/gpio-interrupt-test.o
 
+# Final objects to link into the executable
+OBJECTS := $(LIB_OBJECTS) $(APP_OBJECTS)
 
-$(BINDIR)/%.o: $(SRCDIR)/%.c
+# Default target: build the executable
+all: $(BINDIR)/$(INTERRUPT_TEST)
+
+#
+# Compile library source -> object
+#
+$(BINDIR)/ldd_gpio_api.o: $(LIBSRCDIR)/ldd_gpio_api.c
 	@mkdir -p $(BINDIR)
-	$(CC) -c $(CFLAGS) -I$(INCLUDEDIR) $< -o $@
+	$(CC) $(CFLAGS) -I$(LIBINCDIR) -c $< -o $@
 
-$(BINDIR)/$(APP): ${APP_OBJECTS}
-	$(CC) ${APP_OBJECTS} $(LDFLAGS) -o $@
+#
+# Compile application source -> object
+#
+$(BINDIR)/gpio-interrupt-test.o: $(SRCDIR)/gpio-interrupt-test.c
+	@mkdir -p $(BINDIR)
+	$(CC) $(CFLAGS) -I$(INCLUDEDIR) -I$(LIBINCDIR) -c $< -o $@
 
-.PHONY: all
-all:	$(BINDIR)/$(APP)
+#
+# Link all objects into the final executable
+#
+$(BINDIR)/$(INTERRUPT_TEST): $(OBJECTS)
+	$(CC) $(OBJECTS) $(LDFLAGS) -o $@
 
-.PHONY: clean
+#
+# Clean rule
+#
 clean:
 	rm -rf $(BINDIR)
+
+.PHONY: all clean
