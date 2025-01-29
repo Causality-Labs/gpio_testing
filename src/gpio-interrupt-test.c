@@ -9,6 +9,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <unistd.h>
+#include <poll.h>
 #include "ldd_gpio_api.h"
 
 struct gpio_line gpio_line = 
@@ -38,18 +39,19 @@ int main(int argc, char *argv[])
     }
 
 	enum gpio_v2_line_event_id line_event;
-	fd_set read_fds;
-	struct timeval timeout;
+	struct pollfd poll_fd =
+	{
+		.fd = gpio_line.fd,
+		.events = POLLIN
+	};
+	int timeout_ms = 5000;
+
+
 
 	while(1)
 	{
-		FD_ZERO(&read_fds);
-        FD_SET(gpio_line.fd, &read_fds);
 
-        // Set timeout (optional)
-        timeout.tv_sec = 5;  // Timeout in seconds
-        timeout.tv_usec = 0; // Timeout in microseconds
-		ret = select(gpio_line.fd + 1, &read_fds, NULL, NULL, &timeout);
+		ret = poll(&poll_fd, 1, timeout_ms);
 		if (ret == -1)
 		{
 			printf("Error occurred in select(): %s\n", strerror(errno));
@@ -62,7 +64,7 @@ int main(int argc, char *argv[])
 			continue;
 		}
 
-		if (FD_ISSET(gpio_line.fd, &read_fds))
+		if (ret > 0 && (poll_fd.revents & POLLIN))
 		{
 			ret = gpio_get_line_event(gpio_line.fd, &line_event);
 			if (ret != 0)

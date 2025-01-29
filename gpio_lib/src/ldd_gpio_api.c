@@ -143,7 +143,7 @@ int gpio_get_line_event(int line_fd, enum gpio_v2_line_event_id *line_event)
     struct gpio_v2_line_event event;
     memset(&event, 0, sizeof(event));
 
-    ret = read(line_fd,  &event, sizeof(event));
+    ret = read(line_fd, &event, sizeof(event));
 
     if (ret == -1)
     {
