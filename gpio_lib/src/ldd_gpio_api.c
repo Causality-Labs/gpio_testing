@@ -33,6 +33,9 @@ int gpio_line_request(const char* gpio_chip,
                       const char* line_consumer,
                       struct gpio_line* gpio_line)
 {
+    assert(gpio_chip);
+    assert(gpio_line);
+
     struct gpiochip_info chip_info;
     struct gpio_v2_line_info line_info;
     struct gpio_v2_line_request line_request;
@@ -145,6 +148,9 @@ int gpio_get_line_value( struct gpio_line* gpio_line)
 
 int gpio_get_line_event(struct gpio_line* gpio_line, enum gpio_v2_line_event_id *line_event)
 {
+    assert(gpio_line);
+    assert(line_event);
+
     int ret = 0;
 
     struct gpio_v2_line_event event;
@@ -175,7 +181,7 @@ int gpio_get_line_event(struct gpio_line* gpio_line, enum gpio_v2_line_event_id 
 
 }
 
-int gpio_close_line_fd(unsigned int line_fd)
+int gpio_close_line_fd(struct gpio_line* gpio_line)
 {
-    return close(line_fd);
+    return close(gpio_line->fd);
 }

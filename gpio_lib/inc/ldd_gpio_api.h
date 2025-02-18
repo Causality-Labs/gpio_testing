@@ -31,10 +31,9 @@ struct gpio_line {
 /**
  * @brief Requests a GPIO line for use.
  * @param[in] gpio_chip Name of the GPIO chip
- * @param[in] line_name Name of the GPIO line
  * @param[in] line_flag Configuration flags
  * @param[in] line_consumer Identifier for the consumer
- * @param[out] fd Pointer to store the file descriptor
+ * @param[out] gpio_line Pointer to store gpio_line struct
  * @return 0 - success, error code or negative 1 - failure
  */
 int gpio_line_request(const char* gpio_chip,
@@ -44,16 +43,15 @@ int gpio_line_request(const char* gpio_chip,
 
 /**
  * @brief Reads the state of a GPIO line.
- * @param[in] line_fd - File descriptor of the GPIO line.
- * @param[out] state - Pointer to store the state
+ * @param[out] gpio_line - Pointer to store gpio_line struct
  * @return 0 - success, error code - failure.
  */
 int gpio_get_line_value(struct gpio_line* gpio_line);
 
 /**
  * @brief Gets the event of a GPIO line.
- * @param[in] line_fd - File descriptor of the GPIO line.
- * @param[out] line_event - Pointer to store the state
+ * @param[in] gpio_line - Pointer to store gpio_line struct
+ * @param[out] line_event - Pointer to store the event
  * @return 0 - success, error code - failure.
  */
 int gpio_get_line_event(struct gpio_line* gpio_line,
@@ -61,8 +59,8 @@ int gpio_get_line_event(struct gpio_line* gpio_line,
 
 /**
  * @brief Closes a GPIO line.
- * @param[in] line_fd File descriptor of the GPIO line.
+ * @param[in] gpio_line - Pointer to store gpio_line struct
  * @return 0 - success, negative 1 - failure.
  */
-int gpio_close_line_fd(unsigned int line_fd);
+int gpio_close_line_fd(struct gpio_line* gpio_line);
 #endif  /* _LDD_GPIO_API_H_ */

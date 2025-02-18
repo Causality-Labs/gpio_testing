@@ -46,8 +46,6 @@ int main(int argc, char *argv[])
 	};
 	int timeout_ms = 5000;
 
-
-
 	while(1)
 	{
 
