@@ -28,9 +28,9 @@ int main(int argc, char *argv[])
 	(void)argv;
 
 	int ret = 0;
-    ret = gpio_line_request("/dev/gpiochip5", gpio_line.name,
+    ret = gpio_line_request("/dev/gpiochip5",
                              GPIO_V2_LINE_FLAG_INPUT | GPIO_V2_LINE_FLAG_EDGE_RISING | GPIO_V2_LINE_FLAG_EDGE_FALLING, 
-                             "tests-program", &gpio_line.fd);
+                             "tests-program", &gpio_line);
     if (ret != 0)
     {
       printf("%s: Could not open gpio line fd. Error: %s \n",

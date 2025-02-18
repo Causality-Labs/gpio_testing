@@ -20,16 +20,13 @@
 
 #include <stdint.h>
 #include <stdbool.h>
-//#include <linux/gpio.h>
 #include "gpio.h"
-
 
 struct gpio_line {
     const char* name;
     int fd;
     bool state;
 };
-
 
 /**
  * @brief Requests a GPIO line for use.
@@ -41,10 +38,9 @@ struct gpio_line {
  * @return 0 - success, error code or negative 1 - failure
  */
 int gpio_line_request(const char* gpio_chip,
-                      const char* line_name,
                       enum gpio_v2_line_flag line_flag,
                       const char* line_consumer,
-                      int* fd);
+                      struct gpio_line* gpio_line);
 
 /**
  * @brief Reads the state of a GPIO line.
@@ -52,8 +48,7 @@ int gpio_line_request(const char* gpio_chip,
  * @param[out] state - Pointer to store the state
  * @return 0 - success, error code - failure.
  */
-int gpio_get_line_value(int line_fd,
-                        bool* state);
+int gpio_get_line_value(struct gpio_line* gpio_line);
 
 /**
  * @brief Gets the event of a GPIO line.
@@ -61,7 +56,7 @@ int gpio_get_line_value(int line_fd,
  * @param[out] line_event - Pointer to store the state
  * @return 0 - success, error code - failure.
  */
-int gpio_get_line_event(int line_fd,
+int gpio_get_line_event(struct gpio_line* gpio_line,
                         enum gpio_v2_line_event_id *line_event);
 
 /**
@@ -69,5 +64,5 @@ int gpio_get_line_event(int line_fd,
  * @param[in] line_fd File descriptor of the GPIO line.
  * @return 0 - success, negative 1 - failure.
  */
-int gpio_close_line_fd(int line_fd);
+int gpio_close_line_fd(unsigned int line_fd);
 #endif  /* _LDD_GPIO_API_H_ */

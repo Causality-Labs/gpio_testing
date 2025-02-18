@@ -1,6 +1,6 @@
 /*
  ***************************************************************
- * Copyright (c) 2016-2017 Tektelic Communications Inc.
+ * Copyright (c) 2024-2025 Tektelic Communications Inc.
  *
  * This code contains confidential information of Tektelic
  * Communications Inc.
@@ -9,31 +9,29 @@
  * regarding its accuracy, completeness or performance.
  */
 /**
- * @brief   Pearl Implementation of the logical device driver for
- *          reading PSU alarm contacts
- * @author  Hubert Bugajski
- * @date    August 31, 2017
+ * @brief   Generic logical device driver API for GPIOs.
+ * @author  Ime Asamudo
+ * @date    December 5, 2024
  *
  ***************************************************************/
 #include <stdio.h>
 #include <stdint.h>
-
-/* #include <linux/gpio.h> */
-#include "ldd_gpio_api.h"
 #include <sys/ioctl.h>
 #include <errno.h>
 #include <string.h>
 #include <stdbool.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <assert.h>
+
+#include "ldd_gpio_api.h"
 
 #define MAX_NO_OF_LINES_REQUESTED 1
 
 int gpio_line_request(const char* gpio_chip,
-                      const char* line_name,
                       enum gpio_v2_line_flag line_flag,
                       const char* line_consumer,
-                      int* fd)
+                      struct gpio_line* gpio_line)
 {
     struct gpiochip_info chip_info;
     struct gpio_v2_line_info line_info;
@@ -80,7 +78,7 @@ int gpio_line_request(const char* gpio_chip,
             return ret;
         }
 
-        if (strncmp(line_name, line_info.name, strlen(line_name)) == 0)
+        if (strncmp(gpio_line->name, line_info.name, GPIO_MAX_NAME_SIZE) == 0)
         {
             line_offset = line_info.offset;
             found = true;
@@ -97,7 +95,14 @@ int gpio_line_request(const char* gpio_chip,
     memset(&line_request, 0, sizeof(line_request));
     line_request.offsets[0] = line_offset;
     line_request.config.flags = line_flag;
-    strncpy(line_request.consumer, line_consumer, sizeof(line_request.consumer));
+
+    int consumer_size = strlen(line_consumer);
+    if (consumer_size >= GPIO_MAX_NAME_SIZE)
+    {
+        close(chip_fd);
+        return ENAMETOOLONG;
+    }
+    snprintf(line_request.consumer, sizeof(line_consumer), "%s", line_consumer);
     line_request.num_lines = MAX_NO_OF_LINES_REQUESTED;
 
     ret = ioctl(chip_fd, GPIO_V2_GET_LINE_IOCTL, &line_request);
@@ -110,12 +115,14 @@ int gpio_line_request(const char* gpio_chip,
     }
 
     close(chip_fd);
-    *fd = line_request.fd;
+    gpio_line->fd = line_request.fd;
     return 0;
 }
 
-int gpio_get_line_value(int line_fd, bool* state)
+int gpio_get_line_value( struct gpio_line* gpio_line)
 {
+    assert(gpio_line);
+
     struct gpio_v2_line_values line_values;
 
     int ret;
@@ -123,7 +130,7 @@ int gpio_get_line_value(int line_fd, bool* state)
     memset(&line_values, 0, sizeof(line_values));
     line_values.mask = 1;
 
-    ret = ioctl(line_fd, GPIO_V2_LINE_GET_VALUES_IOCTL, &line_values);
+    ret = ioctl(gpio_line->fd, GPIO_V2_LINE_GET_VALUES_IOCTL, &line_values);
 
     if (ret < 0)
     {
@@ -131,19 +138,19 @@ int gpio_get_line_value(int line_fd, bool* state)
         return ret;
     }
 
-    *state = line_values.bits;
+    gpio_line->state = line_values.bits;
 
     return 0;
 }
 
-int gpio_get_line_event(int line_fd, enum gpio_v2_line_event_id *line_event)
+int gpio_get_line_event(struct gpio_line* gpio_line, enum gpio_v2_line_event_id *line_event)
 {
     int ret = 0;
 
     struct gpio_v2_line_event event;
     memset(&event, 0, sizeof(event));
 
-    ret = read(line_fd, &event, sizeof(event));
+    ret = read(gpio_line->fd, &event, sizeof(event));
 
     if (ret == -1)
     {
@@ -168,7 +175,7 @@ int gpio_get_line_event(int line_fd, enum gpio_v2_line_event_id *line_event)
 
 }
 
-int gpio_close_line_fd(int line_fd)
+int gpio_close_line_fd(unsigned int line_fd)
 {
     return close(line_fd);
 }
