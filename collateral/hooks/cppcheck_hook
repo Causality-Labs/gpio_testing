@@ -24,12 +24,12 @@ for file in "$@"; do
     done
 
     # Run cppcheck only on the changed lines
-    output=$(cppcheck --enable=all --suppress=missingIncludeSystem --error-exitcode=1 --template=gcc "${temp_file}" "${include_args[@]}")
+    cppcheck --enable=all --error-exitcode=1 --template=gcc "${temp_file}"
     err=$?
 
     if [[ "${err}" -ne 0 ]]; then
       echo "cppcheck found issues in modified lines of '${file}'. Fix them before committing."
-      echo "${output}"
+      #echo "${output}"
       rm -f "${temp_file}"
       exit 1
     fi
