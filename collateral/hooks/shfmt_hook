@@ -1,0 +1,16 @@
+#!/bin/bash
+
+# Iterate over each file passed as an argument
+for file in "$@"; do
+  # Check if the file exists and is readable
+  if [ -r "${file}" ]; then
+    # Check if the file starts with the desired shebangs
+    shebang=$(head -n 1 "${file}")
+    if [[ "${shebang}" == "#!/bin/bash" || "${shebang}" == "#!/bin/sh" ]]; then
+      echo "Formatting ${file} with shfmt..."
+      shfmt -i 2 -ci -d -w "${file}"
+    fi
+  else
+    echo "Skipping ${file}: file does not exist or is not readable."
+  fi
+done

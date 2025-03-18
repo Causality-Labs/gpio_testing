@@ -1,0 +1,16 @@
+#!/bin/bash
+
+# Iterate over each file passed as an argument
+for file in "$@"; do
+  # Check if the file exists and is readable
+  if [ -r "${file}" ]; then
+    # Check if the file starts with the desired shebangs
+    shebang=$(head -n 1 "${file}")
+    if [[ "${shebang}" == "#!/bin/bash" || "${shebang}" == "#!/bin/sh" ]]; then
+      echo "Running shellcheck on ${file} ..."
+      shellcheck --enable=require-variable-braces,quote-safe-variables "${file}"
+    fi
+  else
+    echo "Skipping ${file}: file does not exist or is not readable."
+  fi
+done

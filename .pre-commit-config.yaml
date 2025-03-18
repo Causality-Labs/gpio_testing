@@ -1,0 +1,17 @@
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+repos:
+  - repo: local
+    hooks:
+      - id: shfmt
+        name: shell_formatter
+        entry: collateral/hooks/shfmt_hook
+        language: script
+        types_or: [shell, bash, text]
+  - repo: local
+    hooks:
+    -   id: shellcheck
+        name: shellcheck
+        entry: collateral/hooks/shellcheck_hook
+        language: script
+        types_or: [shell, bash, text]
