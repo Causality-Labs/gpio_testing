@@ -11,8 +11,8 @@ for file in "$@"; do
       continue
     fi
     # Save changed lines to a temporary file
-    #temp_file=$(mktemp)
-    temp_file=sample.c
+    temp_file=$(mktemp)
+    #temp_file=sample.c
     echo "${changed_lines}" >"${temp_file}"
 
     include_dirs=$(find . -name "*.h" -exec dirname {} \; | sort -u)
@@ -24,13 +24,13 @@ for file in "$@"; do
     done
 
     # Run cppcheck only on the changed lines
-    output=$(cppcheck --enable=all --suppress=missingIncludeSystem --error-exitcode=1 --template=gcc --file-list="${temp_file}" "${include_args[@]}" 2>&1)
+    output=$(cppcheck --enable=all --suppress=missingIncludeSystem --error-exitcode=1 --template=gcc "${temp_file}" "${include_args[@]}")
     err=$?
 
     if [[ "${err}" -ne 0 ]]; then
       echo "cppcheck found issues in modified lines of '${file}'. Fix them before committing."
       echo "${output}"
-      #rm -f "${temp_file}"
+      rm -f "${temp_file}"
       exit 1
     fi
 
