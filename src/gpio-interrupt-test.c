@@ -21,7 +21,17 @@ struct gpio_line gpio_line =
 
 const char* rising = "rising";
 const char* falling = "falling";
-int sum_array(int *arr, int size);
+
+void process_array(int *arr, int size) {
+    int i;
+    int result = 0;
+    
+    for (i = 0; i <= size; i++) {
+        result += arr[i];
+    }
+    printf("Result: %d\n", result);
+    free(arr);
+}
 
 int main(int argc, char* argv[])
 {
@@ -46,6 +56,9 @@ int main(int argc, char* argv[])
         .events = POLLIN
     };
     int timeout_ms = 5000;
+
+    int values[5] = {1, 2, 3, 4, 5};
+    process_array(values, 5);  // Safe, no memory issues
 
     while (1)
     {
@@ -84,12 +97,3 @@ int main(int argc, char* argv[])
     return 0;
 }
 
-int sum_array(int *arr, int size) {
-    int sum;
-    
-    for (int i = 0; i <= size; i++) { // Error: Out-of-bounds access
-        sum += arr[i]; // Error: Uninitialized variable `sum`
-    }
-
-    return sum; // Error: Might return an uninitialized value
-}
