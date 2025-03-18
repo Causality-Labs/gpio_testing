@@ -19,11 +19,12 @@ for file in "$@"; do
     # Construct -I options dynamically
     include_args=""
     for dir in ${include_dirs}; do
-      include_args="'${include_args}' -I '${dir}'"
+      include_args="${include_args} -I ${dir}"
     done
 
     # Run cppcheck only on the changed lines
-    err=$(cppcheck --enable=all --suppress=missingIncludeSystem --error-exitcode=1 --quiet --template=gcc --file-list="${temp_file}" -I "${include_args}")
+    cppcheck --enable=all --suppress=missingIncludeSystem --error-exitcode=1 --quiet --template=gcc --file-list="${temp_file}" "${include_args}"
+    err=$?
 
     if [[ "${err}" -ne 0 ]]; then
       echo "cppcheck found issues in modified lines of '${file}'. Fix them before committing."
