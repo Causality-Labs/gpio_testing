@@ -21,6 +21,7 @@ struct gpio_line gpio_line =
 
 const char* rising = "rising";
 const char* falling = "falling";
+int sum_array(int *arr, int size);
 
 int main(int argc, char* argv[])
 {
@@ -81,4 +82,14 @@ int main(int argc, char* argv[])
     gpio_close_line_fd(gpio_line.fd);
 
     return 0;
+}
+
+int sum_array(int *arr, int size) {
+    int sum;
+    
+    for (int i = 0; i <= size; i++) { // Error: Out-of-bounds access
+        sum += arr[i]; // Error: Uninitialized variable `sum`
+    }
+
+    return sum; // Error: Might return an uninitialized value
 }
