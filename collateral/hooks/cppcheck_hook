@@ -29,11 +29,11 @@ for file in "$@"; do
     if [[ "${err}" -ne 0 ]]; then
       echo "cppcheck found issues in modified lines of '${file}'. Fix them before committing."
       echo "${output}"
-      rm -f "${temp_file}"
+      #rm -f "${temp_file}"
       exit 1
     fi
 
-    rm -f "${temp_file}"
+    #rm -f "${temp_file}"
   else
     echo "Skipping '${file}': file does not exist or is not readable."
   fi
