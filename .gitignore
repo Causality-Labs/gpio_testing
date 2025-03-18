@@ -6,3 +6,4 @@ venv/*
 tests/build/
 gpio_lib/obj/*
 
+sample.c
