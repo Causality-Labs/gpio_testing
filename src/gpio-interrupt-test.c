@@ -75,6 +75,7 @@ int main(int argc, char* argv[])
                    (line_event == GPIO_V2_LINE_EVENT_RISING_EDGE ? rising : falling));
 
         }
+
     }
 
     gpio_close_line_fd(gpio_line.fd);

@@ -1,0 +1,32 @@
+#!/bin/bash
+
+#!/bin/bash
+
+# Iterate over each file passed as an argument
+for file in "$@"; do
+  # Check if the file exists and is readable
+  if [ -r "${file}" ]; then
+    # Get only the new/changed lines from staged changes
+    changed_lines=$(git diff --cached -U0 "$file" | grep -E '^\+' | grep -Ev '^\+\+\+' | sed 's/^+//')
+    # Skip checking if there are no actual new lines (e.g., only deletions)
+    if [[ -z "$changed_lines" ]]; then
+      continue
+    fi
+    # Save changed lines to a temporary file
+    temp_file=$(mktemp)
+    echo "$changed_lines" >"$temp_file"
+
+    # Run cppcheck only on the changed lines
+    cppcheck --enable=all --error-exitcode=1 --quiet --template=gcc --file-list="$temp_file"
+
+    if [[ $? -ne 0 ]]; then
+      echo "cppcheck found issues in modified lines of $file. Fix them before committing."
+      rm -f "$temp_file"
+      exit 1
+    fi
+
+    rm -f "$temp_file"
+  else
+    echo "Skipping ${file}: file does not exist or is not readable."
+  fi
+done

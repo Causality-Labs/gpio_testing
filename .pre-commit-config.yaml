@@ -15,3 +15,10 @@ repos:
         entry: collateral/hooks/shellcheck_hook
         language: script
         types_or: [shell, bash, text]
+  - repo: local
+    hooks:
+    -   id: cpppcheck
+        name: cppcheck
+        entry: collateral/hooks/cppcheck_hook
+        language: script
+        types_or: [c, header]
