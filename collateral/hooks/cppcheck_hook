@@ -25,6 +25,7 @@ for file in "$@"; do
     # Run cppcheck only on the changed lines
     cppcheck --enable=all --suppress=missingIncludeSystem --error-exitcode=1 --template=gcc --file-list="${temp_file}" "${include_args[@]}" 2>&1
     err=$?
+    echo "${err}"
 
     if [[ "${err}" -ne 0 ]]; then
       echo "cppcheck found issues in modified lines of '${file}'. Fix them before committing."
